@@ -333,7 +333,7 @@
         document.getElementById('receiveAmount').textContent = data.receiveAmount.toUpperCase();
         document.getElementById('referenceNumber').textContent = data.referenceNumber.toUpperCase();
 
-        // Show/hide rows based on payment method
+        // Show/hide 
         const senderRow = document.getElementById('senderRow');
         const pinRow = document.getElementById('pinRow');
         const phoneRow = document.getElementById('phoneRow');
@@ -379,13 +379,13 @@
             ewalletRow.classList.add('hidden');
             ewalletAccountRow.classList.add('hidden');
             
-            // Show financial details
+            
             if (data.exchangeRate === 'N/A') exchangeRateRow.classList.add('hidden');
             if (data.payInAmount === 'N/A') payInAmountRow.classList.add('hidden');
             if (data.serviceCharge === 'N/A') serviceChargeRow.classList.add('hidden');
             if (data.totalAmount === 'N/A') totalAmountRow.classList.add('hidden');
         } else if (paymentMethod.includes('wallet') || paymentMethod.includes('ewallet')) {
-            // E-Wallet - show ewallet fields, hide PIN and bank fields
+            // E-Wallet
             pinRow.classList.add('hidden');
             if (data.receiverPhone === 'N/A') phoneRow.classList.add('hidden');
             bankRow.classList.add('hidden');
@@ -400,7 +400,7 @@
             if (data.serviceCharge === 'N/A') serviceChargeRow.classList.add('hidden');
             if (data.totalAmount === 'N/A') totalAmountRow.classList.add('hidden');
         } else {
-            // Default: hide all optional fields if N/A
+
             if (data.pin === 'N/A') pinRow.classList.add('hidden');
             if (data.receiverPhone === 'N/A') phoneRow.classList.add('hidden');
             if (data.bankName === 'N/A') bankRow.classList.add('hidden');
@@ -416,7 +416,6 @@
             if (data.totalAmount === 'N/A') totalAmountRow.classList.add('hidden');
         }
 
-        // Download PDF functionality
         document.getElementById('downloadBtn').addEventListener('click', () => {
             const element = document.getElementById('receiptContainer');
             const downloadBtn = document.getElementById('downloadBtn');

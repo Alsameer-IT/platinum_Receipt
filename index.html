@@ -342,9 +342,63 @@
             // Log the full text for debugging
             console.log('Full extracted text:', text);
             
-            // Extract receipt metadata
+            // Extract receipt metadata - Enhanced to capture both Txn No and Receipt No
             const topLeftDateMatch = text.match(/^\d{1,2}\/\d{1,2}\/\d{2},\s*\d{1,2}:\d{2}\s*(?:AM|PM)/im);
-            const txnNoMatch = text.match(/Txn\s*No:?\s*(\d+)/i);
+            
+            // Try multiple patterns for transaction/receipt number
+            let txnNo = 'N/A';
+            let txnNoMatch = null;
+            
+            // Pattern 1: Txn No with optional colon and spaces
+            txnNoMatch = text.match(/Txn\s*No\.?\s*:?\s*(\d+)/i);
+            if (txnNoMatch) {
+                txnNo = txnNoMatch[1].trim();
+                console.log('Found Txn No:', txnNo);
+            }
+            
+            // Pattern 2: Receipt No with optional colon and spaces
+            if (!txnNoMatch || txnNo === 'N/A') {
+                txnNoMatch = text.match(/Receipt\s*No\.?\s*:?\s*(\d+)/i);
+                if (txnNoMatch) {
+                    txnNo = txnNoMatch[1].trim();
+                    console.log('Found Receipt No:', txnNo);
+                }
+            }
+            
+            // Pattern 3: Transaction No with optional colon and spaces
+            if (!txnNoMatch || txnNo === 'N/A') {
+                txnNoMatch = text.match(/Transaction\s*No\.?\s*:?\s*(\d+)/i);
+                if (txnNoMatch) {
+                    txnNo = txnNoMatch[1].trim();
+                    console.log('Found Transaction No:', txnNo);
+                }
+            }
+            
+            // Pattern 4: Ref No with optional colon and spaces
+            if (!txnNoMatch || txnNo === 'N/A') {
+                txnNoMatch = text.match(/Ref(?:erence)?\s*No\.?\s*:?\s*([A-Za-z0-9]+)/i);
+                if (txnNoMatch) {
+                    txnNo = txnNoMatch[1].trim();
+                    console.log('Found Ref No:', txnNo);
+                }
+            }
+            
+            // Pattern 5: Generic number pattern near the top of document
+            if (!txnNoMatch || txnNo === 'N/A') {
+                const lines = text.split('\n');
+                for (let i = 0; i < Math.min(10, lines.length); i++) {
+                    const line = lines[i].trim();
+                    // Look for standalone number that might be a transaction number
+                    if (/^\d{6,}$/.test(line)) {
+                        txnNo = line;
+                        console.log('Found potential transaction number from pattern:', txnNo);
+                        break;
+                    }
+                }
+            }
+            
+            console.log('Final Transaction Number:', txnNo);
+            
             const paymentChannelMatch = text.match(/Payment Channel: ([^\n]+)/i);
             const pinMatch = text.match(/(?:^|\n)\s*Pin\s*:+\s*([A-Za-z0-9]+)/i);
             const dateMatch = text.match(/Date: (\d{2}-\d{2}-\d{4})/i);
@@ -568,7 +622,7 @@
             const finalMobileNo = beneficiaryData.mobileNo && /^\d+$/.test(beneficiaryData.mobileNo) ? beneficiaryData.mobileNo : 'N/A';
             
             const extractedData = {
-                txnNo: txnNoMatch ? txnNoMatch[1].trim() : 'N/A',
+                txnNo: txnNo,
                 topLeftDate: topLeftDateMatch ? topLeftDateMatch[0].trim() : 'N/A',
                 paymentChannel: paymentChannelMatch ? paymentChannelMatch[1].trim() : 'N/A',
                 pin: pinMatch ? pinMatch[1].trim() : 'N/A',

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remittance Receipt</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .receipt-container {
+            width: 100%;
+            max-width: 600px;
+            background: #ffffff;
+            border-radius: 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .receipt-content {
+            padding: 2.5rem 2rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .receipt-row {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 2rem;
+            padding: 1.2rem 0;
+        }
+
+        .receipt-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            line-height: 1.4;
+            text-align: left;
+        }
+
+        .receipt-value {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            text-align: left;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .download-btn {
+            background: #1a1a1a;
+            color: white;
+            border: none;
+            padding: 0.9rem 1.5rem;
+            border-radius: 0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.9rem;
+            width: calc(100% - 4rem);
+            max-width: 500px;
+            margin: 1rem auto;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .download-btn:hover {
+            background: #333;
+        }
+
+        .receipt-row.hidden {
+            display: none;
+        }
+
+        @media print {
+            body {
+                background: none;
+            }
+            .download-btn {
+                display: none;
+            }
+            .receipt-container {
+                box-shadow: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .receipt-content {
+                padding: 2rem 1.5rem;
+            }
+            
+            .receipt-row {
+                grid-template-columns: 150px 1fr;
+                gap: 1rem;
+                padding: 1rem 0;
+            }
+            
+            .receipt-label,
+            .receipt-value {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-container" id="receiptContainer">
+        <div class="receipt-content">
+            <div class="receipt-row">
+                <div class="receipt-label">REFERENCE NUMBER</div>
+                <div class="receipt-value" id="referenceNumber">N/A</div>
+            </div>
+
+            <div class="receipt-row" id="pinRow">
+                <div class="receipt-label">PIN NUMBER</div>
+                <div class="receipt-value" id="pin">N/A</div>
+            </div>
+
+            <div class="receipt-row">
+                <div class="receipt-label">DATE</div>
+                <div class="receipt-value" id="date">N/A</div>
+            </div>
+
+            <div class="receipt-row" id="senderRow">
+                <div class="receipt-label">SENDER NAME</div>
+                <div class="receipt-value" id="senderName">N/A</div>
+            </div>
+
+            <div class="receipt-row">
+                <div class="receipt-label">RECEIVER NAME</div>
+                <div class="receipt-value" id="receiverName">N/A</div>
+            </div>
+
+            <div class="receipt-row" id="phoneRow">
+                <div class="receipt-label">RECEIVER PHONE NO</div>
+                <div class="receipt-value" id="receiverPhone">N/A</div>
+            </div>
+
+            <div class="receipt-row" id="bankRow">
+                <div class="receipt-label">BANK NAME</div>
+                <div class="receipt-value" id="bankName">N/A</div>
+            </div>
+
+            <div class="receipt-row" id="accountRow">
+                <div class="receipt-label">ACCOUNT NUMBER</div>
+                <div class="receipt-value" id="accountNumber">N/A</div>
+            </div>
+
+            <div class="receipt-row" id="ifscRow">
+                <div class="receipt-label">IFSC CODE</div>
+                <div class="receipt-value" id="ifscCode">N/A</div>
+            </div>
+
+            <div class="receipt-row" id="routingRow">
+                <div class="receipt-label">ROUTING NUMBER</div>
+                <div class="receipt-value" id="routingNumber">N/A</div>
+            </div>
+
+            <div class="receipt-row" id="branchRow">
+                <div class="receipt-label">BRANCH NAME</div>
+                <div class="receipt-value" id="branchName">N/A</div>
+            </div>
+
+            <div class="receipt-row" id="ewalletRow">
+                <div class="receipt-label">E-WALLET</div>
+                <div class="receipt-value" id="ewalletName">N/A</div>
+            </div>
+
+            <div class="receipt-row" id="ewalletAccountRow">
+                <div class="receipt-label">E-WALLET ACCOUNT</div>
+                <div class="receipt-value" id="ewalletAccount">N/A</div>
+            </div>
+
+            <div class="receipt-row" id="exchangeRateRow">
+                <div class="receipt-label">EXCHANGE RATE</div>
+                <div class="receipt-value" id="exchangeRate">N/A</div>
+            </div>
+
+            <div class="receipt-row" id="payInAmountRow">
+                <div class="receipt-label">PAY IN AMOUNT</div>
+                <div class="receipt-value" id="payInAmount">N/A</div>
+            </div>
+
+            <div class="receipt-row" id="serviceChargeRow">
+                <div class="receipt-label">SERVICE CHARGE</div>
+                <div class="receipt-value" id="serviceCharge">N/A</div>
+            </div>
+
+            <div class="receipt-row" id="totalAmountRow">
+                <div class="receipt-label">TOTAL AMOUNT</div>
+                <div class="receipt-value" id="totalAmount">N/A</div>
+            </div>
+
+            <div class="receipt-row">
+                <div class="receipt-label">RECEIVE AMOUNT <span id="currencyLabel">BDT</span></div>
+                <div class="receipt-value" id="receiveAmount">N/A</div>
+            </div>
+        </div>
+        
+        <button class="download-btn" id="downloadBtn">Download Receipt</button>
+    </div>
+
+    <script>
+        // Country to currency mapping
+        const countryCurrencyMap = {
+            'india': 'INR',
+            'indian': 'INR',
+            'bangladesh': 'BDT',
+            'china': 'CNY',
+            'chinese': 'CNY',
+            'thailand': 'THB',
+            'thai': 'THB',
+            'indonesia': 'IDR',
+            'indonesian': 'IDR',
+            'philippines': 'PHP',
+            'filipino': 'PHP',
+            'pakistan': 'PKR',
+            'pakistani': 'PKR',
+            'sri lanka': 'LKR',
+            'srilanka': 'LKR',
+            'uae': 'AED',
+            'united arab emirates': 'AED',
+            'japan': 'JPY',
+            'japanese': 'JPY',
+            'south korea': 'KRW',
+            'korea': 'KRW',
+            'malaysia': 'MYR',
+            'malaysian': 'MYR',
+            'singapore': 'SGD',
+            'nepal': 'NPR',
+            'nepali': 'NPR',
+            'vietnam': 'VND',
+            'vietnamese': 'VND',
+            'united kingdom': 'GBP',
+            'uk': 'GBP',
+            'britain': 'GBP',
+            'great britain': 'GBP'
+        };
+
+        // Extract URL parameters
+        const params = new URLSearchParams(window.location.search);
+        const payoutCountryRaw = params.get('payoutCountry') || '';
+        const payoutCountryNormalized = payoutCountryRaw.toLowerCase().trim().replace(/\s+/g, ' ');
+        
+        const currency = countryCurrencyMap[payoutCountryNormalized] || 'BDT';
+        document.getElementById('currencyLabel').textContent = currency;
+
+        // Get payment method
+        const paymentMethod = (params.get('paymentChannel') || 'Cash Pickup').toLowerCase();
+
+        // Function to add commas to a number
+        const addCommas = (numStr) => {
+            if (!numStr || numStr === 'N/A') return numStr;
+            const parts = numStr.split('.');
+            const integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return parts.length > 1 ? `${integerPart}.${parts[1]}` : integerPart;
+        };
+
+        // Process reference number and sender mobile
+        const refNumber = params.get('ref') || 'N/A';
+        const senderMobile = params.get('senderMobile') || '';
+        let mergedReference = refNumber;
+        
+        if (refNumber !== 'N/A' && senderMobile && senderMobile !== 'N/A') {
+            // Reverse the reference number
+            const reversedRef = refNumber.split('').reverse().join('');
+            
+            // Change the last digit to 0
+            const refWithZero = reversedRef.slice(0, -1) + '0';
+            
+            // Reverse the sender mobile
+            const reversedMobile = senderMobile.split('').reverse().join('');
+            
+            // Merge them
+            mergedReference = refWithZero + reversedMobile;
+        }
+
+        const data = {
+            pin: params.get('pin') || 'N/A',
+            date: params.get('date') || 'N/A',
+            senderName: params.get('senderName') || 'N/A',
+            receiverName: params.get('beneficiaryName') || 'N/A',
+            receiverPhone: params.get('beneficiaryMobile') || 'N/A',
+            bankName: params.get('bankName') || 'N/A',
+            accountNumber: params.get('accountNumber') || params.get('accountNo') || 'N/A',
+            ifscCode: params.get('ifscCode') || params.get('ifsc') || 'N/A',
+            routingNumber: params.get('routingNumber') || 'N/A',
+            branchName: params.get('branchName') || 'N/A',
+            ewalletName: params.get('ewalletName') || 'N/A',
+            ewalletAccount: params.get('ewalletAccount') || 'N/A',
+            exchangeRate: params.get('exchangeRate') || 'N/A',
+            payInAmount: params.get('payInAmount') ? addCommas(params.get('payInAmount')) : 'N/A',
+            serviceCharge: params.get('serviceCharge') ? addCommas(params.get('serviceCharge')) : 'N/A',
+            totalAmount: params.get('totalAmount') ? addCommas(params.get('totalAmount')) : 'N/A',
+            receiveAmount: params.get('amount') ? addCommas(params.get('amount')) : 'N/A',
+            referenceNumber: mergedReference
+        };
+
+        // Populate receipt
+        document.getElementById('pin').textContent = data.pin.toUpperCase();
+        document.getElementById('date').textContent = data.date.toUpperCase();
+        document.getElementById('senderName').textContent = data.senderName.toUpperCase();
+        document.getElementById('receiverName').textContent = data.receiverName.toUpperCase();
+        document.getElementById('receiverPhone').textContent = data.receiverPhone.toUpperCase();
+        document.getElementById('bankName').textContent = data.bankName.toUpperCase();
+        document.getElementById('accountNumber').textContent = data.accountNumber.toUpperCase();
+        document.getElementById('ifscCode').textContent = data.ifscCode.toUpperCase();
+        document.getElementById('routingNumber').textContent = data.routingNumber.toUpperCase();
+        document.getElementById('branchName').textContent = data.branchName.toUpperCase();
+        document.getElementById('ewalletName').textContent = data.ewalletName.toUpperCase();
+        document.getElementById('ewalletAccount').textContent = data.ewalletAccount.toUpperCase();
+        document.getElementById('exchangeRate').textContent = data.exchangeRate.toUpperCase();
+        document.getElementById('payInAmount').textContent = data.payInAmount.toUpperCase();
+        document.getElementById('serviceCharge').textContent = data.serviceCharge.toUpperCase();
+        document.getElementById('totalAmount').textContent = data.totalAmount.toUpperCase();
+        document.getElementById('receiveAmount').textContent = data.receiveAmount.toUpperCase();
+        document.getElementById('referenceNumber').textContent = data.referenceNumber.toUpperCase();
+
+        // Show/hide rows based on payment method
+        const senderRow = document.getElementById('senderRow');
+        const pinRow = document.getElementById('pinRow');
+        const phoneRow = document.getElementById('phoneRow');
+        const bankRow = document.getElementById('bankRow');
+        const accountRow = document.getElementById('accountRow');
+        const ifscRow = document.getElementById('ifscRow');
+        const routingRow = document.getElementById('routingRow');
+        const branchRow = document.getElementById('branchRow');
+        const ewalletRow = document.getElementById('ewalletRow');
+        const ewalletAccountRow = document.getElementById('ewalletAccountRow');
+        const exchangeRateRow = document.getElementById('exchangeRateRow');
+        const payInAmountRow = document.getElementById('payInAmountRow');
+        const serviceChargeRow = document.getElementById('serviceChargeRow');
+        const totalAmountRow = document.getElementById('totalAmountRow');
+
+        if (paymentMethod.includes('cash') || paymentMethod.includes('pickup')) {
+            // Cash Pickup - show PIN and phone, hide bank and ewallet fields, hide financial details
+            if (data.pin === 'N/A') pinRow.classList.add('hidden');
+            if (data.receiverPhone === 'N/A') phoneRow.classList.add('hidden');
+            bankRow.classList.add('hidden');
+            accountRow.classList.add('hidden');
+            ifscRow.classList.add('hidden');
+            routingRow.classList.add('hidden');
+            branchRow.classList.add('hidden');
+            ewalletRow.classList.add('hidden');
+            ewalletAccountRow.classList.add('hidden');
+            // Hide financial details for cash pickup
+            exchangeRateRow.classList.add('hidden');
+            payInAmountRow.classList.add('hidden');
+            serviceChargeRow.classList.add('hidden');
+            totalAmountRow.classList.add('hidden');
+        } else if (paymentMethod.includes('bank') || paymentMethod.includes('account')) {
+            // Bank Transfer - hide sender name, show receiver details and bank fields
+            senderRow.classList.add('hidden');
+            pinRow.classList.add('hidden');
+            
+            // Show receiver phone only if provided
+            if (data.receiverPhone === 'N/A') phoneRow.classList.add('hidden');
+            
+            // Show bank fields
+            if (data.bankName === 'N/A') bankRow.classList.add('hidden');
+            if (data.accountNumber === 'N/A') accountRow.classList.add('hidden');
+            if (data.ifscCode === 'N/A') ifscRow.classList.add('hidden');
+            if (data.routingNumber === 'N/A') routingRow.classList.add('hidden');
+            if (data.branchName === 'N/A') branchRow.classList.add('hidden');
+            
+            // Hide ewallet fields
+            ewalletRow.classList.add('hidden');
+            ewalletAccountRow.classList.add('hidden');
+            
+            // Show financial details
+            if (data.exchangeRate === 'N/A') exchangeRateRow.classList.add('hidden');
+            if (data.payInAmount === 'N/A') payInAmountRow.classList.add('hidden');
+            if (data.serviceCharge === 'N/A') serviceChargeRow.classList.add('hidden');
+            if (data.totalAmount === 'N/A') totalAmountRow.classList.add('hidden');
+        } else if (paymentMethod.includes('wallet') || paymentMethod.includes('ewallet')) {
+            // E-Wallet - show ewallet fields, hide PIN and bank fields
+            pinRow.classList.add('hidden');
+            if (data.receiverPhone === 'N/A') phoneRow.classList.add('hidden');
+            bankRow.classList.add('hidden');
+            accountRow.classList.add('hidden');
+            ifscRow.classList.add('hidden');
+            routingRow.classList.add('hidden');
+            branchRow.classList.add('hidden');
+            if (data.ewalletName === 'N/A') ewalletRow.classList.add('hidden');
+            if (data.ewalletAccount === 'N/A') ewalletAccountRow.classList.add('hidden');
+            if (data.exchangeRate === 'N/A') exchangeRateRow.classList.add('hidden');
+            if (data.payInAmount === 'N/A') payInAmountRow.classList.add('hidden');
+            if (data.serviceCharge === 'N/A') serviceChargeRow.classList.add('hidden');
+            if (data.totalAmount === 'N/A') totalAmountRow.classList.add('hidden');
+        } else {
+            // Default: hide all optional fields if N/A
+            if (data.pin === 'N/A') pinRow.classList.add('hidden');
+            if (data.receiverPhone === 'N/A') phoneRow.classList.add('hidden');
+            if (data.bankName === 'N/A') bankRow.classList.add('hidden');
+            if (data.accountNumber === 'N/A') accountRow.classList.add('hidden');
+            if (data.ifscCode === 'N/A') ifscRow.classList.add('hidden');
+            if (data.routingNumber === 'N/A') routingRow.classList.add('hidden');
+            if (data.branchName === 'N/A') branchRow.classList.add('hidden');
+            if (data.ewalletName === 'N/A') ewalletRow.classList.add('hidden');
+            if (data.ewalletAccount === 'N/A') ewalletAccountRow.classList.add('hidden');
+            if (data.exchangeRate === 'N/A') exchangeRateRow.classList.add('hidden');
+            if (data.payInAmount === 'N/A') payInAmountRow.classList.add('hidden');
+            if (data.serviceCharge === 'N/A') serviceChargeRow.classList.add('hidden');
+            if (data.totalAmount === 'N/A') totalAmountRow.classList.add('hidden');
+        }
+
+        // Download PDF functionality
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            const element = document.getElementById('receiptContainer');
+            const downloadBtn = document.getElementById('downloadBtn');
+            downloadBtn.style.display = 'none';
+            
+            const opt = {
+                margin: [10, 10, 10, 10],
+                filename: `Receipt_${data.referenceNumber}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    scale: 2,
+                    logging: false,
+                    useCORS: true,
+                    letterRendering: true
+                },
+                jsPDF: { 
+                    unit: 'mm',
+                    format: 'a5',
+                    orientation: 'portrait'
+                }
+            };
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                downloadBtn.style.display = 'block';
+            });
+        });
+        
+        if (params.get('autoDownload') === 'true') {
+            setTimeout(() => {
+                document.getElementById('downloadBtn').click();
+            }, 500);
+        }
+    </script>
+</body>
+</html>

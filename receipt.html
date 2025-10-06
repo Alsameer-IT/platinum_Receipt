@@ -169,7 +169,7 @@
             </div>
 
             <div class="receipt-row" id="routingRow">
-                <div class="receipt-label">ROUTING NUMBER</div>
+                <div class="receipt-label">BRANCH CODE</div>
                 <div class="receipt-value" id="routingNumber">N/A</div>
             </div>
 
@@ -262,10 +262,10 @@
         const currency = countryCurrencyMap[payoutCountryNormalized] || 'BDT';
         document.getElementById('currencyLabel').textContent = currency;
 
-        // Get payment method
+        
         const paymentMethod = (params.get('paymentChannel') || 'Cash Pickup').toLowerCase();
 
-        // Function to add commas to a number
+        
         const addCommas = (numStr) => {
             if (!numStr || numStr === 'N/A') return numStr;
             const parts = numStr.split('.');
@@ -273,22 +273,22 @@
             return parts.length > 1 ? `${integerPart}.${parts[1]}` : integerPart;
         };
 
-        // Process reference number and sender mobile
+        
         const refNumber = params.get('ref') || 'N/A';
         const senderMobile = params.get('senderMobile') || '';
         let mergedReference = refNumber;
         
         if (refNumber !== 'N/A' && senderMobile && senderMobile !== 'N/A') {
-            // Reverse the reference number
+            
             const reversedRef = refNumber.split('').reverse().join('');
             
-            // Change the last digit to 0
+           
             const refWithZero = reversedRef.slice(0, -1) + '0';
             
-            // Reverse the sender mobile
-            const reversedMobile = senderMobile.split('').reverse().join('');
+           
+            const reversedMobile = senderMobile;//.split('').reverse().join('')
             
-            // Merge them
+            
             mergedReference = refWithZero + reversedMobile;
         }
 
@@ -350,7 +350,6 @@
         const totalAmountRow = document.getElementById('totalAmountRow');
 
         if (paymentMethod.includes('cash') || paymentMethod.includes('pickup')) {
-            // Cash Pickup - show PIN and phone, hide bank and ewallet fields, hide financial details
             if (data.pin === 'N/A') pinRow.classList.add('hidden');
             if (data.receiverPhone === 'N/A') phoneRow.classList.add('hidden');
             bankRow.classList.add('hidden');
@@ -360,20 +359,16 @@
             branchRow.classList.add('hidden');
             ewalletRow.classList.add('hidden');
             ewalletAccountRow.classList.add('hidden');
-            // Hide financial details for cash pickup
             exchangeRateRow.classList.add('hidden');
             payInAmountRow.classList.add('hidden');
             serviceChargeRow.classList.add('hidden');
             totalAmountRow.classList.add('hidden');
         } else if (paymentMethod.includes('bank') || paymentMethod.includes('account')) {
-            // Bank Transfer - hide sender name, show receiver details and bank fields
             senderRow.classList.add('hidden');
             pinRow.classList.add('hidden');
             
-            // Show receiver phone only if provided
             if (data.receiverPhone === 'N/A') phoneRow.classList.add('hidden');
             
-            // Show bank fields
             if (data.bankName === 'N/A') bankRow.classList.add('hidden');
             if (data.accountNumber === 'N/A') accountRow.classList.add('hidden');
             if (data.ifscCode === 'N/A') ifscRow.classList.add('hidden');

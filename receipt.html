@@ -365,17 +365,16 @@
         const totalAmountRow = document.getElementById('totalAmountRow');
 
         if (paymentMethod.includes('cash') || paymentMethod.includes('pickup')) {
-            // Cash Pickup - Show all amount details
-            senderRow.classList.add('hidden');
+            // Cash Pickup - Show sender name and bank details
             if (data.pin === 'N/A') pinRow.classList.add('hidden');
             if (data.receiverPhone === 'N/A') phoneRow.classList.add('hidden');
             
-            // Hide bank details
-            bankRow.classList.add('hidden');
-            accountRow.classList.add('hidden');
-            ifscRow.classList.add('hidden');
-            routingRow.classList.add('hidden');
-            branchRow.classList.add('hidden');
+            // Show bank details for cash pickup
+            if (data.bankName === 'N/A') bankRow.classList.add('hidden');
+            if (data.accountNumber === 'N/A') accountRow.classList.add('hidden');
+            if (data.ifscCode === 'N/A') ifscRow.classList.add('hidden');
+            if (data.routingNumber === 'N/A') routingRow.classList.add('hidden');
+            if (data.branchName === 'N/A') branchRow.classList.add('hidden');
             
             // Hide ewallet fields
             ewalletRow.classList.add('hidden');

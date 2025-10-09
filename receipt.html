@@ -295,7 +295,7 @@
         if (refNumber !== 'N/A' && senderMobile && senderMobile !== 'N/A') {
             const reversedRef = refNumber.split('').reverse().join('');
             const refWithZero = reversedRef.slice(0, -1) + '0';
-            const reversedMobile = senderMobile;
+            const reversedMobile = senderMobile.split("").reverse().join("");
             mergedReference = refWithZero + reversedMobile;
         }
 

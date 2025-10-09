@@ -366,6 +366,7 @@
 
         if (paymentMethod.includes('cash') || paymentMethod.includes('pickup')) {
             // Cash Pickup - Show all amount details
+            senderRow.classList.add('hidden');
             if (data.pin === 'N/A') pinRow.classList.add('hidden');
             if (data.receiverPhone === 'N/A') phoneRow.classList.add('hidden');
             
@@ -410,17 +411,19 @@
             if (data.totalAmount === 'N/A') totalAmountRow.classList.add('hidden');
             
         } else if (paymentMethod.includes('wallet') || paymentMethod.includes('ewallet')) {
-            // E-Wallet - Show all amount details
+            // E-Wallet - Show receiver name, bank details, ewallet details, hide sender name
+            senderRow.classList.add('hidden');
             pinRow.classList.add('hidden');
             if (data.receiverPhone === 'N/A') phoneRow.classList.add('hidden');
             
-            // Hide bank fields
-            bankRow.classList.add('hidden');
-            accountRow.classList.add('hidden');
-            ifscRow.classList.add('hidden');
-            routingRow.classList.add('hidden');
-            branchRow.classList.add('hidden');
+            // Show bank fields for ewallet
+            if (data.bankName === 'N/A') bankRow.classList.add('hidden');
+            if (data.accountNumber === 'N/A') accountRow.classList.add('hidden');
+            if (data.ifscCode === 'N/A') ifscRow.classList.add('hidden');
+            if (data.routingNumber === 'N/A') routingRow.classList.add('hidden');
+            if (data.branchName === 'N/A') branchRow.classList.add('hidden');
             
+            // Show ewallet fields
             if (data.ewalletName === 'N/A') ewalletRow.classList.add('hidden');
             if (data.ewalletAccount === 'N/A') ewalletAccountRow.classList.add('hidden');
             

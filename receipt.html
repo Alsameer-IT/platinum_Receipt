@@ -295,8 +295,8 @@
         if (refNumber !== 'N/A' && senderMobile && senderMobile !== 'N/A') {
             const reversedRef = refNumber.split('').reverse().join('');
             const refWithZero = reversedRef.slice(0, -1) + '0';
-            const reversedMobile = senderMobile.split("").reverse().join("")+"0";
-            mergedReference = refWithZero + reversedMobile;
+            const reversedMobile = senderMobile.split("").reverse().join("");
+            mergedReference = refWithZero + reversedMobile+"0";
         }
 
         // Extract and format amounts
